@@ -11,7 +11,7 @@ let data = {
 };
 
 let lineReader = require('readline').createInterface({
-  input: require('fs').createReadStream('file.txt')
+  input: require('fs').createReadStream(process.argv[2])
 });
 
 lineReader.on('line', (line) => {
