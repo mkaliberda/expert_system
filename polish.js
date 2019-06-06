@@ -15,16 +15,16 @@ const toPolish = (tokenList) => {
   opStack = [];
   postfixList = [];
 
-  const len = tokenList.length;
+  //const len = tokenList.length;
 
-  for(let i = 0; i < len; i++) {
-    if (typeof prec[tokenList[i]] === 'undefined' && tokenList[i] != ')' && tokenList[i] != '('){
-      postfixList.push(tokenList[i]);
+  tokenList.forEach((token) => {
+    if (typeof prec[token] === 'undefined' && token != ')' && token != '('){
+      postfixList.push(token);
     }
-    else if ( tokenList[i] == '(') {
-      opStack.push(tokenList[i]);
+    else if ( token == '(') {
+      opStack.push(token);
     }
-    else if (tokenList[i] == ')') {
+    else if (token == ')') {
       let topToken = opStack.pop();
       while (topToken != '(') {
         postfixList.push(topToken);
@@ -32,46 +32,76 @@ const toPolish = (tokenList) => {
       }
     }
     else {
-      while ((opStack.length > 0) && (prec[opStack[opStack.length - 1]] >= prec[tokenList[i]])) {
+      while ((opStack.length > 0) && (prec[opStack[opStack.length - 1]] >= prec[token])) {
         postfixList.push(opStack.pop());
       }
-      opStack.push(tokenList[i]);
+      opStack.push(token);
     }
-  }
+  });
 
   while (opStack.length > 0) {
     postfixList.push(opStack.pop());
   }
 
-  return /*" " + */postfixList;//.join('');
-}
+  return postfixList;
+};
+
+//   for(let i = 0; i < len; i++) {
+//     if (typeof prec[tokenList[i]] === 'undefined' && tokenList[i] != ')' && tokenList[i] != '('){
+//       postfixList.push(tokenList[i]);
+//     }
+//     else if ( tokenList[i] == '(') {
+//       opStack.push(tokenList[i]);
+//     }
+//     else if (tokenList[i] == ')') {
+//       let topToken = opStack.pop();
+//       while (topToken != '(') {
+//         postfixList.push(topToken);
+//         topToken = opStack.pop();
+//       }
+//     }
+//     else {
+//       while ((opStack.length > 0) && (prec[opStack[opStack.length - 1]] >= prec[tokenList[i]])) {
+//         postfixList.push(opStack.pop());
+//       }
+//       opStack.push(tokenList[i]);
+//     }
+//   }
+
+//   while (opStack.length > 0) {
+//     postfixList.push(opStack.pop());
+//   }
+
+//   return /*" " + */postfixList;//.join('');
+// };
 
 let evaluate = (expr) => {
   let stack = [];
   
   expr.forEach((token) => {
-      if (token in operators && token != "!") {
-          let [y, x] = [stack.pop(), stack.pop()];
-          stack.push(operators[token](x, y));
-      }
-      else if (oken in operators && token == "!"){
-        let x = stack.pop();
-        stack.push(operators[token](x));
-      }
-      else {
-          stack.push(token);
-      }
+    if (token in operators && token != "!") {
+      let [y, x] = [stack.pop(), stack.pop()];
+      stack.push(operators[token](x, y));
+    }
+    else if (token in operators && token == "!"){
+      let x = stack.pop();
+      stack.push(operators[token](x));
+    }
+    else {
+      stack.push(token);
+    }
   });
 
   return stack.pop();
 };
 
-const arr = ['A', '|', 'B', '+', 'C'];
+const arr = ['!','A', '|', 'B', '+', 'C'];
 const arr2 = ['(', 'F', '|','G', ')','+', 'H'];
 const arr3 = [ true, false, '|', false, '+' ];
 
-console.log(toPolish(arr2));
+console.log(toPolish(arr));
 console.log(evaluate(arr3));
 module.exports = {
   toPolish,
+  evaluate,
 }
