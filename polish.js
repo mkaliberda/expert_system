@@ -5,6 +5,20 @@ const operators = {
   '!': (x) => !x
 };
 
+let data = {
+  'input': [{'left':'A|B+C', 'right': 'E'}],    //{'left':'A|B+C', 'right': 'E'},
+  'vars': {'A': true, 'B': false, },     // ['A' => true, 'B' => false]
+  'output': ['E'],   //['E'] - переменные котрые необходимо найти
+};
+
+const getStringByLetter = (liter) => {
+  const len = data.input.length;
+  for(let i = 0; i < len; i++){
+    if(data.input[i].right.includes(liter)) { console.log(Array.from(data.input[i].left)); return Array.from(data.input[i].left); }
+  }
+  return [];
+}
+
 const toPolish = (tokenList) => {
   const prec = {};
   prec["!"] = 3;
@@ -75,7 +89,27 @@ const toPolish = (tokenList) => {
 //   return /*" " + */postfixList;//.join('');
 // };
 
-let evaluate = (expr) => {
+// let evaluate = (expr) => {
+//   let stack = [];
+  
+//   expr.forEach((token) => {
+//     if (token in operators && token != "!") {
+//       let [y, x] = [stack.pop(), stack.pop()];
+//       stack.push(operators[token](x, y));
+//     }
+//     else if (token in operators && token == "!"){
+//       let x = stack.pop();
+//       stack.push(operators[token](x));
+//     }
+//     else {
+//       stack.push(token);
+//     }
+//   });
+
+//   return stack.pop();
+// };
+
+const evaluate = (expr) => {
   let stack = [];
   
   expr.forEach((token) => {
@@ -88,19 +122,31 @@ let evaluate = (expr) => {
       stack.push(operators[token](x));
     }
     else {
-      stack.push(token);
+      if (typeof data.vars[token] !== 'undefined') { stack.push(data.vars[token]); }
+      else {
+        let eval = getStringByLetter(token);
+        if(eval.length == 0) { 
+          data.vars[token] = false;
+          stack.push(false); 
+        }
+        else {
+          let value = evaluate(eval);
+          data.vars[token] = value;
+          stack.push(value);
+        }
+      }
     }
   });
 
   return stack.pop();
 };
 
-const arr = ['!','A', '|', 'B', '+', 'C'];
-const arr2 = ['(', 'F', '|','G', ')','+', 'H'];
-const arr3 = [ true, false, '|', false, '+' ];
+// const arr = ['!','A', '|', 'B', '+', 'C'];
+// const arr2 = ['(', 'F', '|','G', ')','+', 'H'];
+// const arr3 = [ true, false, '|', false, '+' ];
 
-console.log(toPolish(arr));
-console.log(evaluate(arr3));
+// console.log(toPolish(arr));
+console.log(evaluate(toPolish(Array.from(data.input[0].left))));
 module.exports = {
   toPolish,
   evaluate,
