@@ -17,7 +17,7 @@ after_script:
 
 script:
   - make lint
-  - make test -coverage
+  # - make test -coverage
 
 notifications:
   email: false

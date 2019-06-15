@@ -9,7 +9,11 @@ extends:
   - 'airbnb-base'
   - 'plugin:jest/recommended'
 rules:
-  comma-dangle:
-    - error
-    - always
   no-console: 0
+  semi:
+    - error
+    - never
+  # new block empty line
+  padded-blocks: off
+  # eslint-disable-next-line 
+  brace-style: off
