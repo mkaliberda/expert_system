@@ -22,7 +22,7 @@ lineReaderNew.on('line', (line) => {
     try {
       formatter.formatterLineArray(cleanLine)
     } catch (error) {
-      console.error(error)
+      console.log(error)
     }
   }
 })

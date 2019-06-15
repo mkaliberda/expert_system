@@ -1,4 +1,4 @@
-        
+
 # this is a comment$
 # all the required rules and symbols, along with the bonus ones, will be
 # shown here. spacing is not important
@@ -12,7 +12,7 @@ B ^ !A => !D
 B ^ !(A + !C) => G
 V ^ W => X # V xor W implies X
 A + B => Y + Z # A and B implies Y and Z
-#C | D => X | V # C or D implies X or V
+C | D => X | V # C or D implies X or V
 !E + (F ^ G) + D | !(A) => !V # E and F implies not V
 B => E
 C => E
