@@ -11,21 +11,43 @@ const operators = {
 //   'output': ['E'],   //['E'] - переменные котрые необходимо найти
 // };
 
+// let data = {
+//   input: [
+//     { left: 'A+Q', right: 'C' },
+//     { left: 'A+D', right: 'Q' },
+//     { left: 'D+E', right: 'F' },
+//     { left: 'G+H', right: 'I' },
+//     { left: 'J+K', right: 'L' },
+//   ],
+//   vars: { A: true, B: true, D: true, H: true },
+//   output: [ 'C', 'F', 'I', 'L' ]
+// };
+
 let data = {
   input: [
-    { left: 'A+B', right: 'C' },
-    { left: 'D+E', right: 'F' },
-    { left: 'G+H', right: 'I' },
-    { left: 'J+K', right: 'L' },
+    { left: 'C', right: 'E' },
+    { left: 'A+B+C', right: 'D' },
+    { left: '!A+B', right: 'C' },
+    { left: 'A+!B', right: 'F' },
+    { left: 'C|!G', right: '(H+!D)' },
+    { left: 'B^!A', right: '!D' },
+    { left: 'B^!(A+!C)', right: 'G' },
+    { left: 'V^W', right: 'X' },
+    { left: 'A+B', right: 'Y+Z' },
+    { left: '!E+(F^G)+D|!(A)', right: '!V' },
+    { left: 'B', right: 'E' },
+    { left: 'C', right: 'E' },
+    { left: 'L+M|N', right: 'K' },
+    { left: 'A', right: '!(!B+C)' }
   ],
-  vars: { A: true, B: true, D: true, H: true },
-  output: [ 'C', 'F', 'I', 'L' ]
+  vars: { A: true, B: true },
+  output: [ 'G', 'V', 'X', 'H', 'D' ]
 };
 
 const getStringByLetter = (liter) => {
   const len = data.input.length;
   for(let i = 0; i < len; i++){
-    if(data.input[i].right.includes(liter)) { console.log(Array.from(data.input[i].left)); return Array.from(data.input[i].left); }
+    if(data.input[i].right.includes(liter)) { /*console.log(Array.from(data.input[i].left));*/ return Array.from(data.input[i].left); }
   }
   return [];
 }
@@ -86,13 +108,13 @@ const evaluate = (expr, liter) => {
     else {
       if (typeof data.vars[token] !== 'undefined') { stack.push(data.vars[token]); }
       else {
-        let eval = getStringByLetter(token);
-        if(eval.length == 0) { 
+        let ev = getStringByLetter(token);
+        if(ev.length == 0) { 
           data.vars[token] = false;
           stack.push(false); 
         }
         else {
-          let value = evaluate(eval, token);
+          let value = evaluate(toPolish(ev), token);
           data.vars[token] = value;
           stack.push(value);
         }
@@ -102,10 +124,24 @@ const evaluate = (expr, liter) => {
 
   data.vars[liter] = stack.pop();
 
-  return data.vars[liter];
+  //return data.vars[liter];
 };
 
-console.log(evaluate(toPolish(Array.from(data.input[0].left)), data.input[0].right));
+//console.log(evaluate(toPolish(Array.from(data.input[3].left)), data.input[3].right));
+
+let len = data.input.length;
+
+for(let i = 0; i < len; i++) {
+  evaluate(toPolish(Array.from(data.input[i].left)), data.input[i].right)
+}
+
+len = data.output.length;
+
+for(let i = 0; i < len; i++) {
+  console.log(data.output[i], "  -  ", data.vars[data.output[i]]);
+}
+
+
 console.log(data);
 module.exports = {
   toPolish,
