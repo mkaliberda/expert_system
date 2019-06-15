@@ -5,10 +5,21 @@ const operators = {
   '!': (x) => !x
 };
 
+// let data = {
+//   'input': [{'left':'A|B+C', 'right': 'E'}],    //{'left':'A|B+C', 'right': 'E'},
+//   'vars': {'A': true, 'B': false, },     // ['A' => true, 'B' => false]
+//   'output': ['E'],   //['E'] - переменные котрые необходимо найти
+// };
+
 let data = {
-  'input': [{'left':'A|B+C', 'right': 'E'}],    //{'left':'A|B+C', 'right': 'E'},
-  'vars': {'A': true, 'B': false, },     // ['A' => true, 'B' => false]
-  'output': ['E'],   //['E'] - переменные котрые необходимо найти
+  input: [
+    { left: 'A+B', right: 'C' },
+    { left: 'D+E', right: 'F' },
+    { left: 'G+H', right: 'I' },
+    { left: 'J+K', right: 'L' },
+  ],
+  vars: { A: true, B: true, D: true, H: true },
+  output: [ 'C', 'F', 'I', 'L' ]
 };
 
 const getStringByLetter = (liter) => {
@@ -60,56 +71,7 @@ const toPolish = (tokenList) => {
   return postfixList;
 };
 
-//   for(let i = 0; i < len; i++) {
-//     if (typeof prec[tokenList[i]] === 'undefined' && tokenList[i] != ')' && tokenList[i] != '('){
-//       postfixList.push(tokenList[i]);
-//     }
-//     else if ( tokenList[i] == '(') {
-//       opStack.push(tokenList[i]);
-//     }
-//     else if (tokenList[i] == ')') {
-//       let topToken = opStack.pop();
-//       while (topToken != '(') {
-//         postfixList.push(topToken);
-//         topToken = opStack.pop();
-//       }
-//     }
-//     else {
-//       while ((opStack.length > 0) && (prec[opStack[opStack.length - 1]] >= prec[tokenList[i]])) {
-//         postfixList.push(opStack.pop());
-//       }
-//       opStack.push(tokenList[i]);
-//     }
-//   }
-
-//   while (opStack.length > 0) {
-//     postfixList.push(opStack.pop());
-//   }
-
-//   return /*" " + */postfixList;//.join('');
-// };
-
-// let evaluate = (expr) => {
-//   let stack = [];
-  
-//   expr.forEach((token) => {
-//     if (token in operators && token != "!") {
-//       let [y, x] = [stack.pop(), stack.pop()];
-//       stack.push(operators[token](x, y));
-//     }
-//     else if (token in operators && token == "!"){
-//       let x = stack.pop();
-//       stack.push(operators[token](x));
-//     }
-//     else {
-//       stack.push(token);
-//     }
-//   });
-
-//   return stack.pop();
-// };
-
-const evaluate = (expr) => {
+const evaluate = (expr, liter) => {
   let stack = [];
   
   expr.forEach((token) => {
@@ -130,7 +92,7 @@ const evaluate = (expr) => {
           stack.push(false); 
         }
         else {
-          let value = evaluate(eval);
+          let value = evaluate(eval, token);
           data.vars[token] = value;
           stack.push(value);
         }
@@ -138,15 +100,13 @@ const evaluate = (expr) => {
     }
   });
 
-  return stack.pop();
+  data.vars[liter] = stack.pop();
+
+  return data.vars[liter];
 };
 
-// const arr = ['!','A', '|', 'B', '+', 'C'];
-// const arr2 = ['(', 'F', '|','G', ')','+', 'H'];
-// const arr3 = [ true, false, '|', false, '+' ];
-
-// console.log(toPolish(arr));
-console.log(evaluate(toPolish(Array.from(data.input[0].left))));
+console.log(evaluate(toPolish(Array.from(data.input[0].left)), data.input[0].right));
+console.log(data);
 module.exports = {
   toPolish,
   evaluate,

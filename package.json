@@ -17,6 +17,7 @@
     "readline": "^1.3.0"
   },
   "devDependencies": {
+    "babel-watch": "^7.0.0",
     "@babel/cli": "^7.4.4",
     "@babel/core": "^7.4.5",
     "@babel/node": "^7.4.5",
