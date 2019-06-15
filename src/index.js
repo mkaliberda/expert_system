@@ -78,8 +78,3 @@ lineReader.on('line', (line) => {
 lineReader.on('close', (line) => {
   console.log(data)
 })
-
-
-export default (a, b) => a + b
-
-console.log('tag', '1111')
