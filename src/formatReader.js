@@ -34,25 +34,23 @@ class Formatter {
     data.input.push(obj)
   }
 
-  formatterLineArray(lineArray) {
-    lineArray.forEach((element) => {
-      // handler if a Fact
-      if (element.startsWith('=')) {
-        const elementClean = element.replace(/['=']/g, '')
-        this.testAlphabet(elementClean).forEach((fact) => {
-          data.vars[fact] = true
-        })
-      }
-      // handle if a condition
-      else if (element.indexOf('?') !== -1) {
-        const elementClean = element.replace(/['?']/g, '')
-        data.output = this.testAlphabet(elementClean)
-      }
-      // handle if a rules
-      else if (element.indexOf('=>') !== -1) {
-        this.rulesFormatter(element)
-      }
-    })
+  formatterLineArray(element) {
+    // handler if a Fact
+    if (element.startsWith('=')) {
+      const elementClean = element.replace(/['=']/g, '')
+      this.testAlphabet(elementClean).forEach((fact) => {
+        data.vars[fact] = true
+      })
+    }
+    // handle if a condition
+    else if (element.indexOf('?') !== -1) {
+      const elementClean = element.replace(/['?']/g, '')
+      data.output = this.testAlphabet(elementClean)
+    }
+    // handle if a rules
+    else if (element.indexOf('=>') !== -1) {
+      this.rulesFormatter(element)
+    }
   }
 }
 
