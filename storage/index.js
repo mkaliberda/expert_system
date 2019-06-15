@@ -1,5 +1,5 @@
 export default fileData = {
-    inputsLine: {},
-    vars: [],
-    output: []
-}
+  inputsLine: {},
+  vars: [],
+  output: [],
+};

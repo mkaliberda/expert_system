@@ -32,7 +32,7 @@ class Formatter {
     data.input.push(obj)
   }
 
-  lineFormatter(lineArray) {
+  formatterLineArray(lineArray) {
     lineArray.forEach(element => {
       // handler if a Fact
       if (element.startsWith('=')) {
@@ -68,7 +68,7 @@ lineReader.on('line', (line) => {
     lineArray.push(formatLine)
   }
   try {
-    formatter.lineFormatter(lineArray = lineArray)
+    formatter.formatterLineArray(lineArray = lineArray)
   } catch (error) {
     console.error(error)
   }
@@ -78,3 +78,8 @@ lineReader.on('line', (line) => {
 lineReader.on('close', (line) => {
   console.log(data)
 })
+
+
+export default (a, b) => a + b
+
+console.log('tag', '1111')
