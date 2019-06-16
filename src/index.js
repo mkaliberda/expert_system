@@ -1,9 +1,14 @@
 import fs from 'fs'
 import readline from 'readline'
-import Formatter, { data } from './formatReader'
+import Formatter, {
+  data
+} from './formatReader'
 
 
 const lineReaderNew = readline.createInterface({
+  // if ( process.argv[2] ) {
+  //   throw new Error(`Not A-b character in ${element}`)
+  // }
   input: fs.createReadStream(process.argv[2]),
 })
 
@@ -14,16 +19,15 @@ lineReaderNew.on('line', (line) => {
   const cleanLine = formatter.clearReadingLine(line)
 
   if (cleanLine) {
-    lineArray.push(cleanLine)
-  }
-  try {
-    formatter.formatterLineArray(lineArray)
-  } catch (error) {
-    console.error(error)
+    try {
+      formatter.formatterLineArray(cleanLine)
+    } catch (error) {
+      console.log(error)
+    }
   }
 })
 
 
 lineReaderNew.on('close', (line) => {
-  console.log(data, line)
+  console.log('data', data)
 })
