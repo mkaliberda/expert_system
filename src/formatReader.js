@@ -2,8 +2,9 @@
 
 export const data = {
   input: [], // {'left':'A|B+C', 'right': 'E'},
-  vars: {},
+  vars: {}, // rules object
   output: [], // ['E'] - переменные котрые необходимо найти
+ // imp = true if got => elif imp = false if got <=>
 }
 
 
@@ -12,16 +13,28 @@ class Formatter {
 
   testAlphabet(element) {
     if (!/^[A-Z]*$/.test(element)) {
-      // TODO can add custom validation
-      throw new Error(`Not A-b character in ${element}`)
+      throw new Error(`File contain NOT only A-Z in ${element}`)
     }
     return [...element]
   }
 
-  testRules(element, type) {
+  testRules(element, type, imp) {
+    /*
+      Validate and modify rules line
+        - A...Z
+        - +|^!()=>
+        - if line contain '()' and imp is true
+
+      @params element - parsed rule
+      @params type - type of side
+      @params imp - // imp = true if got => elif imp = false if got <=>
+
+    */
     if (!/^[A-Z+|^!()=>]*$/.test(element)) {
-      // TODO can add custom validation
-      throw new Error(`Not A-B character or Operator in ${element}`)
+      throw new Error(`File contain NOT only A-Z or operator: |^!() in ${element}`)
+    }
+    if (type === 'right' && /[()]/g.test(element) && imp) {
+      throw new Error(`got () in right side by rule in ${element}`)
     }
     return type === 'right' ? element.replace(/[()]/g, '') : element
   }
@@ -34,13 +47,15 @@ class Formatter {
     return null
   }
 
-  rulesFormatter(element) {
-    const elementArray = element.split('=>')
-    let left = this.testRules(elementArray[0], 'left')
-    let right = this.testRules(elementArray[1], 'right')
+  rulesFormatter(element, operator) {
+    const elementArray = element.split(operator)
+    const imp = operator === '=>'
+    const leftRule = this.testRules(elementArray[0], 'left', imp)
+    const rightRule = this.testRules(elementArray[1], 'right', imp)
     const obj = {
-      left: left,
-      right: right,
+      left: leftRule,
+      right: rightRule,
+      imp: imp,
     }
     data.input.push(obj)
   }
@@ -58,9 +73,13 @@ class Formatter {
       const elementClean = element.replace(/[?]/g, '')
       data.output = this.testAlphabet(elementClean)
     }
-    // handle if a rules
+    // handle if a rules and <=>
+    else if (element.indexOf('<=>') !== -1) {
+      this.rulesFormatter(element, '<=>')
+    }
+    // handle if a rules and =>
     else if (element.indexOf('=>') !== -1) {
-      this.rulesFormatter(element)
+      this.rulesFormatter(element, '=>')
     }
   }
 }
