@@ -4,7 +4,6 @@ export const data = {
   input: [], // {'left':'A|B+C', 'right': 'E'},
   vars: {}, // rules object
   output: [], // ['E'] - переменные котрые необходимо найти
- // imp = true if got => elif imp = false if got <=>
 }
 
 
