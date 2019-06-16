@@ -30,8 +30,10 @@ lineReaderNew.on('line', (line) => {
 lineReaderNew.on('close', () => {
   let len = data.input.length
   for (let i = 0; i < len; i += 1) {
-    evaluate(toPolish(Array.from(data.input[i].left)),
-      data.input[i].right)
+    if (data.input[i].imp) {
+      evaluate(toPolish(Array.from(data.input[i].left)),
+        data.input[i].right)
+    }
   }
 
   for (let i = 0; i < len; i += 1) {
