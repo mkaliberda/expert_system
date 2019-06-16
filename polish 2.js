@@ -147,6 +147,7 @@ const evaluate = (expr) => {
 
 // console.log(toPolish(arr));
 console.log(evaluate(toPolish(Array.from(data.input[0].left))));
+console.log(data);
 module.exports = {
   toPolish,
   evaluate,
