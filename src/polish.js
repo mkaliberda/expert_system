@@ -93,10 +93,12 @@ export const evaluate = (expr, liter) => {
         else {
           stack.push(false)
         }
-        // stack.push(value);
       }
     }
   })
-
-  data.vars[liter] = stack.pop()
+  const value = stack.pop()
+  if ((typeof data.vars[liter] === 'undefined') || (data.vars[liter] === false)) {
+    data.vars[liter] = value
+  }
+  return value
 }
