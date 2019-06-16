@@ -34,7 +34,7 @@ class Formatter {
       throw new Error(`File contain NOT only A-Z or operator: |^!() in ${element}`)
     }
     if (type === 'right' && /[()]/g.test(element) && imp) {
-      throw new Error(`got () in right side by rule in ${element}`)
+      throw new Error(`got brackets in right side by rule in ${element}`)
     }
     return type === 'right' ? element.replace(/[()]/g, '') : element
   }
