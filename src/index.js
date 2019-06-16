@@ -12,8 +12,6 @@ const lineReaderNew = readline.createInterface({
   input: fs.createReadStream(process.argv[2]),
 })
 
-const lineArray = []
-
 lineReaderNew.on('line', (line) => {
   const formatter = new Formatter()
   const cleanLine = formatter.clearReadingLine(line)
@@ -22,12 +20,13 @@ lineReaderNew.on('line', (line) => {
     try {
       formatter.formatterLineArray(cleanLine)
     } catch (error) {
-      console.error(error)
+      console.log(error)
+      process.exit()
     }
   }
 })
 
 
-lineReaderNew.on('close', (line) => {
+lineReaderNew.on('close', () => {
   console.log('data', data)
 })

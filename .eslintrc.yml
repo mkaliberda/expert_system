@@ -17,3 +17,4 @@ rules:
   padded-blocks: off
   # eslint-disable-next-line 
   brace-style: off
+  object-shorthand: off
