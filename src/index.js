@@ -1,5 +1,6 @@
 import fs from 'fs'
 import readline from 'readline'
+import { evaluate, toPolish } from './polish'
 import Formatter, {
   data
 } from './formatReader'
@@ -28,5 +29,22 @@ lineReaderNew.on('line', (line) => {
 
 
 lineReaderNew.on('close', () => {
-  console.log('data', data)
+  console.log('data before', data)
+  let len = data.input.length;
+  for (let i = 0; i < len; i+=1) {
+    evaluate(toPolish(Array.from(data.input[i].left)), data.input[i].right)
+  }
+
+  for (let i = 0; i < len; i+=1) {
+    if (data.input[i].right.length > 1) {
+      evaluate(toPolish(Array.from(data.input[i].right)), data.input[i].left)
+    }
+  }
+
+  len = data.output.length
+
+  for (let i = 0; i < len; i++) {
+    console.log(data.output[i], "  -  ", data.vars[data.output[i]])
+  }
+
 })

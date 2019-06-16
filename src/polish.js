@@ -1,3 +1,5 @@
+import { data } from './formatReader'
+
 const operators = {
   '+': (x, y) => x && y,
   '|': (x, y) => x || y,
@@ -23,26 +25,26 @@ const operators = {
 //   output: [ 'C', 'F', 'I', 'L' ]
 // };
 
-let data = {
-  input: [
-    { left: 'C', right: 'E' },
-    { left: 'A+B+C', right: 'D' },
-    { left: '!A+B', right: 'C' },
-    { left: 'A+!B', right: 'F' },
-    { left: 'C|!G', right: '(H+!D)' },
-    { left: 'B^!A', right: '!D' },
-    { left: 'B^!(A+!C)', right: 'G' },
-    { left: 'V^W', right: 'X' },
-    { left: 'A+B', right: 'Y+Z' },
-    { left: '!E+(F^G)+D|!(A)', right: '!V' },
-    { left: 'B', right: 'E' },
-    { left: 'C', right: 'E' },
-    { left: 'L+M|N', right: 'K' },
-    { left: 'A', right: '!(!B+C)' }
-  ],
-  vars: { A: true, B: true },
-  output: [ 'G', 'V', 'X', 'H', 'D' ]
-};
+// let data = {
+//   input: [
+//     { left: 'C', right: 'E' },
+//     { left: 'A+B+C', right: 'D' },
+//     { left: '!A+B', right: 'C' },
+//     { left: 'A+!B', right: 'F' },
+//     { left: 'C|!G', right: '(H+!D)' },
+//     { left: 'B^!A', right: '!D' },
+//     { left: 'B^!(A+!C)', right: 'G' },
+//     { left: 'V^W', right: 'X' },
+//     { left: 'A+B', right: 'Y+Z' },
+//     { left: '!E+(F^G)+D|!(A)', right: '!V' },
+//     { left: 'B', right: 'E' },
+//     { left: 'C', right: 'E' },
+//     { left: 'L+M|N', right: 'K' },
+//     { left: 'A', right: '!(!B+C)' }
+//   ],
+//   vars: { A: true, B: true },
+//   output: [ 'G', 'V', 'X', 'H', 'D' ]
+// };
 
 const getStringByLetter = (liter) => {
   const len = data.input.length;
@@ -52,15 +54,15 @@ const getStringByLetter = (liter) => {
   return [];
 }
 
-const toPolish = (tokenList) => {
+export const toPolish = (tokenList) => {
   const prec = {};
   prec["!"] = 3;
   prec["^"] = 2;
   prec["|"] = 2;
   prec["+"] = 2;
   prec["("] = 1;
-  opStack = [];
-  postfixList = [];
+  let opStack = [];
+  let postfixList = [];
 
   //const len = tokenList.length;
 
@@ -93,7 +95,7 @@ const toPolish = (tokenList) => {
   return postfixList;
 };
 
-const evaluate = (expr, liter) => {
+export const evaluate = (expr, liter) => {
   let stack = [];
   
   expr.forEach((token) => {
@@ -146,30 +148,10 @@ const evaluate = (expr, liter) => {
 
 //console.log(evaluate(toPolish(Array.from(data.input[3].left)), data.input[3].right));
 
-let len = data.input.length;
-
-for(let i = 0; i < len; i++) {
-  evaluate(toPolish(Array.from(data.input[i].left)), data.input[i].right);
-}
-
-for(let i = 0; i < len; i++) {
-  if (data.input[i].right.length > 1) {
-    evaluate(toPolish(Array.from(data.input[i].right)), data.input[i].left); 
-  }
-}
-
-len = data.output.length;
-
-for(let i = 0; i < len; i++) {
-  // if (typeof data.vars[data.output[i]] == 'undefined') {
-  //   data.vars[data.output[i]] = false;
-  // }
-  console.log(data.output[i], "  -  ", data.vars[data.output[i]]);
-}
 
 
-console.log(data);
-module.exports = {
-  toPolish,
-  evaluate,
-}
+// console.log(data);
+// module.exports = {
+//   toPolish,
+//   evaluate,
+// }
