@@ -8,6 +8,7 @@
     "babel-node": "babel-node",
     "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
     "watch": "babel-watch src/index.js $FILE",
+    "start": "babel-node src/index.js $FILE",
     "prepublishOnly": "npm run build"
   },
   "author": "",
