@@ -65,15 +65,15 @@ const toPolish = (tokenList) => {
   //const len = tokenList.length;
 
   tokenList.forEach((token) => {
-    if (typeof prec[token] === 'undefined' && token !==')' && token !== '('){
+    if (typeof prec[token] === 'undefined' && token != ')' && token != '('){
       postfixList.push(token);
     }
-    else if ( token === '(') {
+    else if ( token == '(') {
       opStack.push(token);
     }
-    else if (token === ')') {
+    else if (token == ')') {
       let topToken = opStack.pop();
-      while (topToken !== '(') {
+      while (topToken != '(') {
         postfixList.push(topToken);
         topToken = opStack.pop();
       }
@@ -97,11 +97,11 @@ const evaluate = (expr, liter) => {
   let stack = [];
   
   expr.forEach((token) => {
-    if (token in operators && token !== "!") {
+    if (token in operators && token != "!") {
       let [y, x] = [stack.pop(), stack.pop()];
       stack.push(operators[token](x, y));
     }
-    else if (token in operators && token === "!"){
+    else if (token in operators && token == "!"){
       let x = stack.pop();
       stack.push(operators[token](x));
     }
@@ -109,31 +109,14 @@ const evaluate = (expr, liter) => {
       if (typeof data.vars[token] !== 'undefined') { stack.push(data.vars[token]); }
       else {
         let ev = getStringByLetter(token);
-        if(ev.length === 0) { 
+        if(ev.length == 0) { 
           data.vars[token] = false;
           stack.push(false); 
         }
         else {
           let value = evaluate(toPolish(ev), token);
-          if (typeof data.vars[token] === 'undefined'){
-            if (liter.charAt(token) - 1 >= 0 && liter[liter.charAt(token) - 1] === '!') {
-              data.vars[token] = !value;
-              stack.push(!value);
-            }
-            else {
-              data.vars[token] = value;
-              stack.push(value);
-            }
-          }
-          else{
-            if (data.vars[token] === true) {
-              stack.push(true);
-            }
-            else {
-              stack.push(false);
-            }
-          }
-          //stack.push(value);
+          data.vars[token] = value;
+          stack.push(value);
         }
       }
     }
@@ -149,21 +132,12 @@ const evaluate = (expr, liter) => {
 let len = data.input.length;
 
 for(let i = 0; i < len; i++) {
-  evaluate(toPolish(Array.from(data.input[i].left)), data.input[i].right);
-}
-
-for(let i = 0; i < len; i++) {
-  if (data.input[i].right.length > 1) {
-    evaluate(toPolish(Array.from(data.input[i].right)), data.input[i].left); 
-  }
+  evaluate(toPolish(Array.from(data.input[i].left)), data.input[i].right)
 }
 
 len = data.output.length;
 
 for(let i = 0; i < len; i++) {
-  // if (typeof data.vars[data.output[i]] == 'undefined') {
-  //   data.vars[data.output[i]] = false;
-  // }
   console.log(data.output[i], "  -  ", data.vars[data.output[i]]);
 }
 
