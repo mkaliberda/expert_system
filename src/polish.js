@@ -4,7 +4,7 @@ const operators = {
   '+': (x, y) => x && y,
   '|': (x, y) => x || y,
   '^': (x, y) => x || y && x != y,
-  '!': (x) => !x
+  '!': (x) => !x,
 };
 
 // let data = {

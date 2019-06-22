@@ -1,6 +1,10 @@
 /* eslint-disable class-methods-use-this */
 
 export const data = {
+  DEFAULT: 1,
+  IMP: 2,
+  EQUAL: 3,
+  NOT_FOUND: 4,
   input: [], // {'left':'A|B+C', 'right': 'E'},
   vars: {}, // rules object
   output: [], // ['E'] - переменные котрые необходимо найти
@@ -33,9 +37,9 @@ class Formatter {
       throw new Error(`File contain NOT only A-Z or operator: |^!() in ${element}`)
     }
     if (type === 'right' && /[()]/g.test(element) && imp) {
-      throw new Error(`got brackets in right side by rule in ${element}`)
+      throw new Error(`Got brackets in right side by rule in ${element}`)
     }
-    return type === 'right' ? element.replace(/[()]/g, '') : element
+    return element
   }
 
 
@@ -64,7 +68,11 @@ class Formatter {
     if (element.startsWith('=')) {
       const elementClean = element.replace(/[=]/g, '')
       this.testAlphabet(elementClean).forEach((fact) => {
-        data.vars[fact] = true
+        const obj = {
+          value: true,
+          type: data.DEFAULT,
+        }
+        data.vars[fact] = obj
       })
     }
     // handle if a condition
