@@ -28,20 +28,25 @@ lineReaderNew.on('close', () => {
   console.log('data before', data)
   let len = data.input.length
   for (let i = 0; i < len; i += 1) {
-    evaluate(toPolish(Array.from(data.input[i].left)), data.input[i].right)
+    evaluate(toPolish(Array.from(data.input[i].left)),
+      data.input[i].right, data.input[i].imp ? 2 : 3)
   }
 
   for (let i = 0; i < len; i += 1) {
-    if (data.input[i].right.length > 1) {
+    if (data.input[i].right.length > 1 && !data.input[i].imp) {
       evaluate(toPolish(Array.from(data.input[i].right)),
-        data.input[i].left)
+        data.input[i].left, 3)
     }
   }
 
   for (let i = 0; i < len; i += 1) {
     if (!data.input[i].imp) {
-      if (data.vars[data.input[i].left] !== data.vars[data.input[i].right]) {
-        console.log('error')
+      const left = evaluate(toPolish(Array.from(data.input[i].left)), data.input[i].right)
+      const right = evaluate(toPolish(Array.from(data.input[i].right)), data.input[i].left)
+
+      if (left !== right) {
+        console.log(data.input[i], ' - error')
+        process.exit()
       }
     }
   }
@@ -49,7 +54,7 @@ lineReaderNew.on('close', () => {
   len = data.output.length
 
   for (let i = 0; i < len; i += 1) {
-    console.log(data.output[i], '  -  ', data.vars[data.output[i]])
+    console.log(data.output[i], '  -  ', data.vars[data.output[i]].value)
   }
   console.log(data)
 

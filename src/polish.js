@@ -11,14 +11,15 @@ const getStringByLetter = (liter) => {
   const len = data.input.length
   for (let i = 0; i < len; i++) {
     if (data.input[i].right.includes(liter) && !data.input[i].left.includes(liter)) {
-      return Array.from(data.input[i].left)
+      if (data.input[i].imp) { return { ev: Array.from(data.input[i].left), type: 2 } }
+      return { ev: Array.from(data.input[i].left), type: 3 }
     }
   }
-  return []
+  return { ev: [], type: 4 }
 }
 
 export const toPolish = (tokenList) => {
-  const prec = {} 
+  const prec = {}
   prec['!'] = 3
   prec['^'] = 2
   prec['|'] = 2
@@ -56,7 +57,7 @@ export const toPolish = (tokenList) => {
   return postfixList
 }
 
-export const evaluate = (expr, liter) => {
+export const evaluate = (expr, liter, foundType) => {
   const stack = []
 
   expr.forEach((token) => {
@@ -68,26 +69,26 @@ export const evaluate = (expr, liter) => {
       const x = stack.pop()
       stack.push(operators[token](x))
     }
-    else if (typeof data.vars[token] !== 'undefined') { stack.push(data.vars[token]) }
+    else if (typeof data.vars[token] !== 'undefined') { stack.push(data.vars[token].value) }
     else {
-      const ev = getStringByLetter(token)
+      const { ev, type } = getStringByLetter(token)
       if (ev.length === 0) {
-        data.vars[token] = false
+        data.vars[token] = { value: false, type: type }
         stack.push(false)
       }
       else {
-        const value = evaluate(toPolish(ev), token)
+        const value = evaluate(toPolish(ev), token, type)
         if (typeof data.vars[token] === 'undefined') {
           if (liter.charAt(token) - 1 >= 0 && liter[liter.charAt(token) - 1] === '!') {
-            data.vars[token] = !value
+            data.vars[token] = { value: !value, type: foundType }
             stack.push(!value)
           }
           else {
-            data.vars[token] = value
+            data.vars[token] = { value: value, type: foundType }
             stack.push(value)
           }
         }
-        else if (data.vars[token] === true) {
+        else if (data.vars[token].value === true) {
           stack.push(true)
         }
         else {
@@ -96,9 +97,9 @@ export const evaluate = (expr, liter) => {
       }
     }
   })
-  const value = stack.pop()
-  if ((typeof data.vars[liter] === 'undefined') || (data.vars[liter] === false)) {
-    data.vars[liter] = value
+  const val = stack.pop()
+  if ((typeof data.vars[liter] === 'undefined') || (data.vars[liter].value === false)) {
+    data.vars[liter] = { value: val, type: foundType }
   }
-  return value
+  return val
 }
