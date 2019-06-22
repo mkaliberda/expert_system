@@ -18,7 +18,7 @@ const getStringByLetter = (liter) => {
 }
 
 export const toPolish = (tokenList) => {
-  const prec = {}
+  const prec = {} 
   prec['!'] = 3
   prec['^'] = 2
   prec['|'] = 2
