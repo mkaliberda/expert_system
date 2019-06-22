@@ -3,7 +3,6 @@ import readline from 'readline'
 import { evaluate, toPolish } from './polish'
 import Formatter, { data } from './formatReader'
 
-
 const lineReaderNew = readline.createInterface({
   // if ( process.argv[2] ) {
   //   throw new Error(`Not A-b character in ${element}`)
@@ -25,7 +24,6 @@ lineReaderNew.on('line', (line) => {
   }
 })
 
-
 lineReaderNew.on('close', () => {
   console.log('data before', data)
   let len = data.input.length
@@ -35,7 +33,16 @@ lineReaderNew.on('close', () => {
 
   for (let i = 0; i < len; i += 1) {
     if (data.input[i].right.length > 1) {
-      evaluate(toPolish(Array.from(data.input[i].right)), data.input[i].left)
+      evaluate(toPolish(Array.from(data.input[i].right)),
+        data.input[i].left)
+    }
+  }
+
+  for (let i = 0; i < len; i += 1) {
+    if (!data.input[i].imp) {
+      if (data.vars[data.input[i].left] !== data.vars[data.input[i].right]) {
+        console.log('error')
+      }
     }
   }
 
@@ -44,5 +51,6 @@ lineReaderNew.on('close', () => {
   for (let i = 0; i < len; i += 1) {
     console.log(data.output[i], '  -  ', data.vars[data.output[i]])
   }
+  console.log(data)
 
 })

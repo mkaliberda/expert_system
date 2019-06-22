@@ -18,3 +18,4 @@ rules:
   # eslint-disable-next-line 
   brace-style: off
   object-shorthand: off
+  no-plusplus: off

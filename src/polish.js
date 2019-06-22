@@ -3,155 +3,102 @@ import { data } from './formatReader'
 const operators = {
   '+': (x, y) => x && y,
   '|': (x, y) => x || y,
-  '^': (x, y) => x || y && x != y,
-  '!': (x) => !x,
-};
-
-// let data = {
-//   'input': [{'left':'A|B+C', 'right': 'E'}],    //{'left':'A|B+C', 'right': 'E'},
-//   'vars': {'A': true, 'B': false, },     // ['A' => true, 'B' => false]
-//   'output': ['E'],   //['E'] - переменные котрые необходимо найти
-// };
-
-// let data = {
-//   input: [
-//     { left: 'A+Q', right: 'C' },
-//     { left: 'A+D', right: 'Q' },
-//     { left: 'D+E', right: 'F' },
-//     { left: 'G+H', right: 'I' },
-//     { left: 'J+K', right: 'L' },
-//   ],
-//   vars: { A: true, B: true, D: true, H: true },
-//   output: [ 'C', 'F', 'I', 'L' ]
-// };
-
-// let data = {
-//   input: [
-//     { left: 'C', right: 'E' },
-//     { left: 'A+B+C', right: 'D' },
-//     { left: '!A+B', right: 'C' },
-//     { left: 'A+!B', right: 'F' },
-//     { left: 'C|!G', right: '(H+!D)' },
-//     { left: 'B^!A', right: '!D' },
-//     { left: 'B^!(A+!C)', right: 'G' },
-//     { left: 'V^W', right: 'X' },
-//     { left: 'A+B', right: 'Y+Z' },
-//     { left: '!E+(F^G)+D|!(A)', right: '!V' },
-//     { left: 'B', right: 'E' },
-//     { left: 'C', right: 'E' },
-//     { left: 'L+M|N', right: 'K' },
-//     { left: 'A', right: '!(!B+C)' }
-//   ],
-//   vars: { A: true, B: true },
-//   output: [ 'G', 'V', 'X', 'H', 'D' ]
-// };
+  '^': (x, y) => (x || y) && (x !== y),
+  '!': x => !x,
+}
 
 const getStringByLetter = (liter) => {
-  const len = data.input.length;
-  for(let i = 0; i < len; i++){
-    if(data.input[i].right.includes(liter)) { /*console.log(Array.from(data.input[i].left));*/ return Array.from(data.input[i].left); }
+  const len = data.input.length
+  for (let i = 0; i < len; i++) {
+    if (data.input[i].right.includes(liter) && !data.input[i].left.includes(liter)) {
+      return Array.from(data.input[i].left)
+    }
   }
-  return [];
+  return []
 }
 
 export const toPolish = (tokenList) => {
-  const prec = {};
-  prec["!"] = 3;
-  prec["^"] = 2;
-  prec["|"] = 2;
-  prec["+"] = 2;
-  prec["("] = 1;
-  let opStack = [];
-  let postfixList = [];
-
-  //const len = tokenList.length;
+  const prec = {} 
+  prec['!'] = 3
+  prec['^'] = 2
+  prec['|'] = 2
+  prec['+'] = 2
+  prec['('] = 1
+  const opStack = []
+  const postfixList = []
 
   tokenList.forEach((token) => {
-    if (typeof prec[token] === 'undefined' && token !==')' && token !== '('){
-      postfixList.push(token);
+    if (typeof prec[token] === 'undefined' && token !== ')' && token !== '(') {
+      postfixList.push(token)
     }
-    else if ( token === '(') {
-      opStack.push(token);
+    else if (token === '(') {
+      opStack.push(token)
     }
     else if (token === ')') {
-      let topToken = opStack.pop();
+      let topToken = opStack.pop()
       while (topToken !== '(') {
-        postfixList.push(topToken);
-        topToken = opStack.pop();
+        postfixList.push(topToken)
+        topToken = opStack.pop()
       }
     }
     else {
       while ((opStack.length > 0) && (prec[opStack[opStack.length - 1]] >= prec[token])) {
-        postfixList.push(opStack.pop());
+        postfixList.push(opStack.pop())
       }
-      opStack.push(token);
+      opStack.push(token)
     }
-  });
+  })
 
   while (opStack.length > 0) {
-    postfixList.push(opStack.pop());
+    postfixList.push(opStack.pop())
   }
 
-  return postfixList;
-};
+  return postfixList
+}
 
 export const evaluate = (expr, liter) => {
-  let stack = [];
-  
+  const stack = []
+
   expr.forEach((token) => {
-    if (token in operators && token !== "!") {
-      let [y, x] = [stack.pop(), stack.pop()];
-      stack.push(operators[token](x, y));
+    if (token in operators && token !== '!') {
+      const [y, x] = [stack.pop(), stack.pop()]
+      stack.push(operators[token](x, y))
     }
-    else if (token in operators && token === "!"){
-      let x = stack.pop();
-      stack.push(operators[token](x));
+    else if (token in operators && token === '!') {
+      const x = stack.pop()
+      stack.push(operators[token](x))
     }
+    else if (typeof data.vars[token] !== 'undefined') { stack.push(data.vars[token]) }
     else {
-      if (typeof data.vars[token] !== 'undefined') { stack.push(data.vars[token]); }
+      const ev = getStringByLetter(token)
+      if (ev.length === 0) {
+        data.vars[token] = false
+        stack.push(false)
+      }
       else {
-        let ev = getStringByLetter(token);
-        if(ev.length === 0) { 
-          data.vars[token] = false;
-          stack.push(false); 
+        const value = evaluate(toPolish(ev), token)
+        if (typeof data.vars[token] === 'undefined') {
+          if (liter.charAt(token) - 1 >= 0 && liter[liter.charAt(token) - 1] === '!') {
+            data.vars[token] = !value
+            stack.push(!value)
+          }
+          else {
+            data.vars[token] = value
+            stack.push(value)
+          }
+        }
+        else if (data.vars[token] === true) {
+          stack.push(true)
         }
         else {
-          let value = evaluate(toPolish(ev), token);
-          if (typeof data.vars[token] === 'undefined'){
-            if (liter.charAt(token) - 1 >= 0 && liter[liter.charAt(token) - 1] === '!') {
-              data.vars[token] = !value;
-              stack.push(!value);
-            }
-            else {
-              data.vars[token] = value;
-              stack.push(value);
-            }
-          }
-          else{
-            if (data.vars[token] === true) {
-              stack.push(true);
-            }
-            else {
-              stack.push(false);
-            }
-          }
-          //stack.push(value);
+          stack.push(false)
         }
       }
     }
-  });
-
-  data.vars[liter] = stack.pop();
-
-  //return data.vars[liter];
-};
-
-//console.log(evaluate(toPolish(Array.from(data.input[3].left)), data.input[3].right));
-
-
-
-// console.log(data);
-// module.exports = {
-//   toPolish,
-//   evaluate,
-// }
+  })
+  const value = stack.pop()
+  if ((typeof data.vars[liter] === 'undefined') || (data.vars[liter] === false)) {
+    data.vars[liter] = value
+  }
+  return value
+}
