@@ -1,6 +1,6 @@
 import fs from 'fs'
 import readline from 'readline'
-import { evaluate, toPolish } from './polish'
+import { evaluate, toPolish, manageString } from './polish'
 import Formatter, { data } from './formatReader'
 
 const lineReaderNew = readline.createInterface({
@@ -40,6 +40,14 @@ lineReaderNew.on('close', () => {
   }
 
   for (let i = 0; i < len; i += 1) {
+    if (data.input[i].right.length > 1 && data.input[i].imp) {
+      if (typeof data.vars[data.input[i].right] !== 'undefined') {
+        manageString(data.input[i].right, data.vars[data.input[i].right].value)
+      }
+    }
+  }
+
+  for (let i = 0; i < len; i += 1) {
     if (!data.input[i].imp) {
       const left = evaluate(toPolish(Array.from(data.input[i].left)), data.input[i].right)
       const right = evaluate(toPolish(Array.from(data.input[i].right)), data.input[i].left)
@@ -54,7 +62,7 @@ lineReaderNew.on('close', () => {
   len = data.output.length
 
   for (let i = 0; i < len; i += 1) {
-    console.log(data.output[i], '  -  ', data.vars[data.output[i]].value)
+    console.log(data.output[i], '  -  ', data.vars[data.output[i]] ? data.vars[data.output[i]].value : false)
   }
   console.log(data)
 

@@ -6,13 +6,20 @@ const operators = {
   '^': (x, y) => (x || y) && (x !== y),
   '!': x => !x,
 }
+const search = {}
 
 const getStringByLetter = (liter) => {
   const len = data.input.length
+  let j = 0
   for (let i = 0; i < len; i++) {
-    if (data.input[i].right.includes(liter) && !data.input[i].left.includes(liter)) {
-      if (data.input[i].imp) { return { ev: Array.from(data.input[i].left), type: 2 } }
-      return { ev: Array.from(data.input[i].left), type: 3 }
+    if (data.input[i].right.includes(liter) /*&& !data.input[i].left.includes(liter)*/) {
+      if (j === search[liter].iter) {
+        return { ev: Array.from(data.input[i].left), type: data.input[i].imp ? 2 : 3 }
+      }
+      // if (j === search[liter].iter && !data.input[i].imp) {
+      //   return { ev: Array.from(data.input[i].left), type: 3 }
+      // }
+      j += 1
     }
   }
   return { ev: [], type: 4 }
@@ -61,6 +68,9 @@ export const evaluate = (expr, liter, foundType) => {
   const stack = []
 
   expr.forEach((token) => {
+    if (typeof search[token] === 'undefined') { search[token] = { iter: 0 } }
+    else { search[token].iter += 1 }
+
     if (token in operators && token !== '!') {
       const [y, x] = [stack.pop(), stack.pop()]
       stack.push(operators[token](x, y))
@@ -71,6 +81,8 @@ export const evaluate = (expr, liter, foundType) => {
     }
     else if (typeof data.vars[token] !== 'undefined') { stack.push(data.vars[token].value) }
     else {
+      if (typeof search[token] === 'undefined') { search[token] = { iter: 0 } }
+      else { search[token].iter += 1 }
       const { ev, type } = getStringByLetter(token)
       if (ev.length === 0) {
         data.vars[token] = { value: false, type: type }
@@ -95,6 +107,7 @@ export const evaluate = (expr, liter, foundType) => {
           stack.push(false)
         }
       }
+      if (typeof data.vars[token] !== 'undefined') { delete search[token] }
     }
   })
   const val = stack.pop()
@@ -102,4 +115,15 @@ export const evaluate = (expr, liter, foundType) => {
     data.vars[liter] = { value: val, type: foundType }
   }
   return val
+}
+
+export const manageString = (string, value) => {
+  const len = string.length
+  for (let i = 0; i < len; i += 1) {
+    if (string[i].charCodeAt(0) >= 65 && string[i].charCodeAt(0) <= 90) {
+      if (typeof data.vars[string[i]] === 'undefined' || data.vars[string[i]].value === false) {
+        data.vars[string[i]] = data.vars[string[i] - 1] === '!' ? { value: !value, type: 2 } : { value: value, type: 2 }
+      }
+    }
+  }
 }
