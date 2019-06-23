@@ -121,8 +121,12 @@ export const manageString = (string, value) => {
   const len = string.length
   for (let i = 0; i < len; i += 1) {
     if (string[i].charCodeAt(0) >= 65 && string[i].charCodeAt(0) <= 90) {
-      if (typeof data.vars[string[i]] === 'undefined' || data.vars[string[i]].value === false) {
+      if (typeof data.vars[string[i]] === 'undefined' || (data.vars[string[i]].value === false && data.vars[string[i]].type !== 3)) {
         data.vars[string[i]] = data.vars[string[i] - 1] === '!' ? { value: !value, type: 2 } : { value: value, type: 2 }
+      }
+      else if (typeof data.vars[string[i]] !== 'undefined' && data.vars[string[i]].type === 3 && value !== data.vars[string[i]].value) {
+        console.log(string, ' - error')
+        process.exit()
       }
     }
   }
